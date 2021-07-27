@@ -13,6 +13,5 @@ namespace Core.Entities.Users
         public string Department { get; set; }
         public Guid UserId { get; set; }
         public UserEntity User { get; set; }
-
     }
 }
