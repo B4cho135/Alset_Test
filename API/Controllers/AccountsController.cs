@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Enums;
+using AutoMapper;
+using Core.Entities.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Models.Requests;
+using Models.Responses;
+using Models.Users;
+using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,31 +20,34 @@ namespace API.Controllers
     public class AccountsController : ControllerBase
     {
         private UserManager<UserEntity> userManager;
+        private readonly RoleManager<RoleEntity> roleManager;
         private IMapper mapper;
         private readonly SignInManager<UserEntity> signInManager;
         public IConfiguration Configuration { get; }
-        public AccountController(
+        public AccountsController(
             UserManager<UserEntity> userManager,
             SignInManager<UserEntity> signInManager,
-            IConfiguration configuration,
+            IConfiguration configuration, 
+            RoleManager<RoleEntity> roleManager,
             IMapper mapper)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             Configuration = configuration;
+            this.roleManager = roleManager;
             this.mapper = mapper;
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync(Login loginRequest)
+        public async Task<IActionResult> LoginAsync(LoginRequest loginRequest)
         {
-            UserEntity user = await userManager.FindByNameAsync(loginRequest.PhoneNumber);
+            UserEntity user = await userManager.FindByEmailAsync(loginRequest.Email);
             if (user == null)
             {
-                return BadRequest("Invalid Phone/Password");
+                return BadRequest("Invalid Email/Password");
             }
 
-            SignInResult logUserIn = await signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false);
+            var logUserIn = await signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false);
 
             if (!logUserIn.Succeeded)
             {
@@ -53,19 +65,29 @@ namespace API.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync(RegistrantRoleFilter role, Register registerRequest)
+        public async Task<IActionResult> RegisterAsync(RegistrantRoleFilter role, RegisterRequest registerRequest)
         {
             var newUser = new UserEntity()
             {
                 PhoneNumber = registerRequest.PhoneNumber,
-                Email = registerRequest.PhoneNumber,
-                UserName = registerRequest.PhoneNumber,
-                FirstName = registerRequest.FirstName,
-                LastName = registerRequest.LastName
+                Email = registerRequest.Email,
+                Name = registerRequest.Name,
+                Surname = registerRequest.Surname,
+                UserName = registerRequest.Email
             };
             var result = await userManager.CreateAsync(newUser, registerRequest.Password);
             if (result.Succeeded)
             {
+                var existingRole = roleManager.Roles.FirstOrDefault(x => x.NormalizedName == role.ToString().ToUpper());
+                if (existingRole == null)
+                {
+                    var newRole = new RoleEntity()
+                    {
+                        Name = role.ToString(),
+                        NormalizedName = role.ToString().ToUpper()
+                    };
+                    await roleManager.CreateAsync(newRole);
+                }
                 await userManager.AddToRoleAsync(newUser, role.ToString());
                 string token = JwtHelper.GenerateToken(Configuration["Jwt:Secret"], newUser, new List<string>() { role.ToString() });
                 return Ok(token);

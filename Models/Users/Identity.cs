@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Entities.Users
+namespace Models.Users
 {
-    public class IdentityEntity : BaseEntity<Guid>
+    public class Identity
     {
         public byte[] Photo { get; set; }
         public string IdentificationNumber { get; set; }
         public string Department { get; set; }
         public Guid UserId { get; set; }
-        public UserEntity User { get; set; }
+        public User User { get; set; }
     }
 }
