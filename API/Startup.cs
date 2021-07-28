@@ -43,6 +43,7 @@ namespace API
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new UsersProfile());
+                mc.AddProfile(new IdentitiesProfile());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
