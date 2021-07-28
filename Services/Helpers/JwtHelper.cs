@@ -19,13 +19,19 @@ namespace Services.Helpers
 
             var key = System.Text.Encoding.ASCII.GetBytes(secret);
 
+           
+
             var claims = new List<Claim>()
             {
                 new Claim(type:JwtRegisteredClaimNames.Sub, value: user.UserName),
                 new Claim(type:JwtRegisteredClaimNames.Jti, value: Guid.NewGuid().ToString()),
-                new Claim(type:JwtRegisteredClaimNames.Email, value: user.UserName),
-                new Claim(type: "id", user.Id.ToString())
+                new Claim(type:JwtRegisteredClaimNames.Email, value: user.UserName)
             };
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(type: ClaimTypes.Role, value: role));
+            }
 
             foreach (var role in roles)
             {
