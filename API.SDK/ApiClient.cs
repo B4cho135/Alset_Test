@@ -13,12 +13,14 @@ namespace API.SDK
         private readonly ServiceHttpClient httpClient;
         public IIdentityResource Identities { get; set; }
         public IAccountResource Account { get; set; }
+        public IUserResource Users { get; set; }
 
 
         public ApiClient(ServiceHttpClient httpClient)
         {
             Identities = RestService.For<IIdentityResource>(httpClient);
             Account = RestService.For<IAccountResource>(httpClient);
+            Users = RestService.For<IUserResource>(httpClient);
 
             this.httpClient = httpClient;
         }

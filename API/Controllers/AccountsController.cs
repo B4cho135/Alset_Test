@@ -65,8 +65,8 @@ namespace API.Controllers
             var newUser = new UserEntity()
             {
                 PhoneNumber = registerRequest.PhoneNumber,
-                Email = registerRequest.PhoneNumber,
-                UserName = registerRequest.PhoneNumber,
+                Email = registerRequest.Email,
+                UserName = registerRequest.Email,
                 Name = registerRequest.Name,
                 Surname = registerRequest.Surname
             };

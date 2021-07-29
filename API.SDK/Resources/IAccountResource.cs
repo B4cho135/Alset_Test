@@ -13,5 +13,9 @@ namespace API.SDK.Resources
     {
         [Post("/api/accounts/login")]
         public Task<ApiResponse<LoginResponse>> Login(LoginRequest loginRequest);
+        [Post("/api/accounts/register")]
+        public Task<ApiResponse<string>> Register(RegisterRequest registerRequest);
+        [Post("/api/accounts/logout")]
+        public Task<ApiResponse<string>> Logout();
     }
 }

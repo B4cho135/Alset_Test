@@ -15,28 +15,28 @@ namespace API.SDK.Resources
         /// Gets all users from the database
         /// </summary>
         [Get("/api/Identities")]
-        Task<ApiResponse<List<User>>> GetAll();
+        Task<ApiResponse<List<Identity>>> GetAll();
 
 
         /// <summary>
         /// gets specific user using Id from database
         /// </summary>
         [Get("/api/Identities/{Id}")]
-        Task<User> Get(Guid Id);
+        Task<Identity> Get(Guid Id);
 
 
         /// <summary>
         /// adds new User To database
         /// </summary>
         [Post("/api/Identities")]
-        Task Add(User user);
+        Task Add(Identity user);
 
 
         /// <summary>
         /// Updates specific user in database
         /// </summary>
         [Put("/api/Identities")]
-        Task Update(User user);
+        Task Update(Identity user);
 
 
         /// <summary>

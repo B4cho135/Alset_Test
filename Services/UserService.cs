@@ -33,7 +33,7 @@ namespace Services
 
         public async override Task<IEnumerable<User>> GetAll()
         {
-            List<UserEntity> users = await Get().ToListAsync();
+            List<UserEntity> users = await Get().Where(x => !x.IsDeleted).ToListAsync();
 
             foreach(var user in users)
             {

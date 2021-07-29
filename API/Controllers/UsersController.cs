@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Constants;
+using Models.Queries;
 using Models.Users;
 using Services.Abstract;
 using System;
@@ -17,7 +18,7 @@ namespace API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("AllowCors")]
-    //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.Administrator)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.Administrator)]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -36,7 +37,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{Id}")]
-        public async Task<IActionResult> GetAll(Guid Id)
+        public async Task<IActionResult> Get(Guid Id)
         {
 
             var user = await _userService.GetByIdAsync(Id);
@@ -117,7 +118,7 @@ namespace API.Controllers
             return BadRequest("User entity already looks like this");
         }
 
-        [HttpDelete]
+        [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(Guid Id)
         {
             var user = await _userService.Get().FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == Id);

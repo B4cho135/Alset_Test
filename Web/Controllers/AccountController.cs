@@ -1,4 +1,6 @@
 ﻿using API.SDK;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.Requests;
@@ -34,6 +36,7 @@ namespace Web.Controllers
             });
             if(loginResponse.IsSuccessStatusCode)
             {
+                HttpContext.Response.Cookies.Append("Fullname", loginResponse.Content.User.Name + " " + loginResponse.Content.User.Surname, new CookieOptions());
                 HttpContext.Response.Cookies.Append("access_token", loginResponse.Content.JWT, new CookieOptions());
                 return RedirectToAction("Index", "Home");
             }
@@ -48,9 +51,44 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            return RedirectToAction();
+            var registerModel = new RegisterRequest()
+            {
+                Email = model.Email,
+                Name = model.Name,
+                Surname = model.Surname,
+                Password = model.Password,
+                RepeatPassword = model.RepeatPassword
+            };
+            var response = await _client.Account.Register(registerModel);
+            if(!string.IsNullOrEmpty(response.Content))
+            {
+
+                HttpContext.Response.Cookies.Append("access_token", response.Content, new CookieOptions());
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            var response = await _client.Account.Logout();
+            if (response.IsSuccessStatusCode)
+            {
+                Response.Cookies.Delete("access_token", new CookieOptions()
+                {
+                    Secure = true,
+                });
+                Response.Cookies.Delete("Fullname", new CookieOptions()
+                {
+                    Secure = true,
+                });
+                return RedirectToAction("Login", "Account");
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using Models.Users;
+﻿using Models.Queries;
+using Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace Web.Models.Users
         public List<User> Users { get; set; }
         public string FullName { get; set; }
         public string ErrorMessage { get; set; }
+        public UserSearchQuery Query { get; set; }
     }
 }
