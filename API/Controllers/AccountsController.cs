@@ -49,7 +49,6 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-
             var userRoles = await userManager.GetRolesAsync(user);
             string token = JwtHelper.GenerateToken(Configuration["JWT:Secret"], user, userRoles);
             LoginResponse loginResponse = new LoginResponse();

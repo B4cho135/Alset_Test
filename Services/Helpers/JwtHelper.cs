@@ -25,7 +25,8 @@ namespace Services.Helpers
             {
                 new Claim(type:JwtRegisteredClaimNames.Sub, value: user.UserName),
                 new Claim(type:JwtRegisteredClaimNames.Jti, value: Guid.NewGuid().ToString()),
-                new Claim(type:JwtRegisteredClaimNames.Email, value: user.UserName)
+                new Claim(type:JwtRegisteredClaimNames.Email, value: user.UserName),
+                new Claim(type: "FullName", value: user.Name + " " + user.Surname)
             };
 
             foreach (var role in roles)
