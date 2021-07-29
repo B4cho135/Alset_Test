@@ -1,9 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Enums;
+using AutoMapper;
+using Core.Entities.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Models.Requests;
+using Models.Responses;
+using Models.Users;
+using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace API.Controllers
 {
     [Route("api/[controller]")]
@@ -14,7 +22,7 @@ namespace API.Controllers
         private IMapper mapper;
         private readonly SignInManager<UserEntity> signInManager;
         public IConfiguration Configuration { get; }
-        public AccountController(
+        public AccountsController(
             UserManager<UserEntity> userManager,
             SignInManager<UserEntity> signInManager,
             IConfiguration configuration,
@@ -27,21 +35,20 @@ namespace API.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync(Login loginRequest)
+        public async Task<IActionResult> LoginAsync(LoginRequest loginRequest)
         {
-            UserEntity user = await userManager.FindByNameAsync(loginRequest.PhoneNumber);
+            UserEntity user = await userManager.FindByEmailAsync(loginRequest.Email);
             if (user == null)
             {
                 return BadRequest("Invalid Phone/Password");
             }
 
-            SignInResult logUserIn = await signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false);
+            var logUserIn = await signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false);
 
             if (!logUserIn.Succeeded)
             {
                 return BadRequest();
             }
-
             var userRoles = await userManager.GetRolesAsync(user);
             string token = JwtHelper.GenerateToken(Configuration["JWT:Secret"], user, userRoles);
             LoginResponse loginResponse = new LoginResponse();
@@ -53,15 +60,15 @@ namespace API.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync(RegistrantRoleFilter role, Register registerRequest)
+        public async Task<IActionResult> RegisterAsync(RegistrantRoleFilter role, RegisterRequest registerRequest)
         {
             var newUser = new UserEntity()
             {
                 PhoneNumber = registerRequest.PhoneNumber,
-                Email = registerRequest.PhoneNumber,
-                UserName = registerRequest.PhoneNumber,
-                FirstName = registerRequest.FirstName,
-                LastName = registerRequest.LastName
+                Email = registerRequest.Email,
+                UserName = registerRequest.Email,
+                Name = registerRequest.Name,
+                Surname = registerRequest.Surname
             };
             var result = await userManager.CreateAsync(newUser, registerRequest.Password);
             if (result.Succeeded)
