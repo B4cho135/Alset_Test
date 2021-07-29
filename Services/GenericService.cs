@@ -29,7 +29,7 @@ namespace Services
 			TModel model = Mapper.Map<TModel>(entity);
 			return model;
 		}
-		public async Task<Response<TModel>> AddAsync(TEntity entity)
+		public async virtual Task<Response<TModel>> AddAsync(TEntity entity)
 		{
 			try
 			{
@@ -63,7 +63,7 @@ namespace Services
 				return response;
 			}
 		}
-		public async Task<int> DeleteByIdAsync(Guid id)
+		public async virtual Task<int> DeleteByIdAsync(Guid id)
 		{
 			TModel model = await this.GetByIdAsync(id);
 			TEntity entity = Mapper.Map<TEntity>(model);
@@ -80,7 +80,7 @@ namespace Services
 			List<TModel> model = Mapper.Map<List<TModel>>(entity);
 			return model;
 		}
-		public async Task<Response<TModel>> UpdateAsync(TEntity entity)
+		public async virtual Task<Response<TModel>> UpdateAsync(TEntity entity)
 		{
 			try
 			{

@@ -55,6 +55,7 @@ namespace API
 
             services.AddTransient(typeof(IGenericService<,>), typeof(GenericService<,>));
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddSwaggerGen(c =>
             {
